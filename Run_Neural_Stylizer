@@ -1,0 +1,36 @@
+from google.colab import files
+from IPython.display import Image, display
+import os
+
+# 1. Upload the content photo
+print("Step 1: Upload the photo you want to transform (Content Image)")
+content_upload = files.upload()
+
+if content_upload:
+    content_name = list(content_upload.keys())[0]
+    output_name = "stylized_result.jpg"
+    
+    # Use the model name from your training cell
+    # If you renamed it manually, change 'my_custom_style.model' below
+    model_path = f"/content/{model_filename}"
+
+    # 2. Run the Neural Style Transfer
+    print(f"\nStep 2: Applying style using {model_filename}...")
+    !python neural_style/neural_style.py eval \
+        --content-image "{content_name}" \
+        --model "{model_path}" \
+        --output-image "{output_name}" \
+        --accel
+
+    # 3. Display the result in the notebook
+    if os.path.exists(output_name):
+        print("\n--- STYLIZED RESULT ---")
+        display(Image(output_name, width=600))
+
+        # 4. Automatically download to your PC
+        print("\nStep 3: Downloading stylized image to your computer...")
+        files.download(output_name)
+    else:
+        print("\nError: The output image was not created. Check your model path.")
+else:
+    print("\nNo file uploaded.")
